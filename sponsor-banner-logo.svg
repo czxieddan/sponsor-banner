@@ -1,0 +1,33 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <title>Sponsor Banner logo</title>
+  <defs>
+    <linearGradient id="markGradient" x1="181" y1="729" x2="843" y2="295" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FF6A13"/>
+      <stop offset="0.34" stop-color="#FFB22E"/>
+      <stop offset="0.62" stop-color="#71D95E"/>
+      <stop offset="1" stop-color="#13A86B"/>
+    </linearGradient>
+    <linearGradient id="innerLight" x1="291" y1="330" x2="737" y2="674" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.42"/>
+      <stop offset="0.52" stop-color="#FFFFFF" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0.3"/>
+    </linearGradient>
+    <radialGradient id="softEnergy" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(350 326) rotate(42) scale(560 350)">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.38"/>
+      <stop offset="0.44" stop-color="#FFFFFF" stop-opacity="0.08"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+    <clipPath id="markClip">
+      <path d="M326 246h371c46 0 83 37 83 83s-37 83-83 83H356c-22 0-40 18-40 40s18 40 40 40h319c82 0 149 67 149 149s-67 149-149 149H327c-46 0-83-37-83-83s37-83 83-83h348c23 0 41-18 41-40s-18-40-41-40H356c-82 0-149-67-149-149s67-149 149-149z"/>
+    </clipPath>
+  </defs>
+  <g>
+    <path d="M326 246h371c46 0 83 37 83 83s-37 83-83 83H356c-22 0-40 18-40 40s18 40 40 40h319c82 0 149 67 149 149s-67 149-149 149H327c-46 0-83-37-83-83s37-83 83-83h348c23 0 41-18 41-40s-18-40-41-40H356c-82 0-149-67-149-149s67-149 149-149z" fill="url(#markGradient)"/>
+    <g clip-path="url(#markClip)">
+      <path d="M188 220h666v582H188z" fill="url(#softEnergy)"/>
+      <path d="M292 316c0-16 13-29 29-29h372c16 0 29 13 29 29s-13 29-29 29H321c-16 0-29-13-29-29z" fill="url(#innerLight)" opacity="0.58"/>
+      <path d="M302 696c0-16 13-29 29-29h336c16 0 29 13 29 29s-13 29-29 29H331c-16 0-29-13-29-29z" fill="#FFFFFF" opacity="0.2"/>
+      <path d="M520 432c33 14 69 22 108 22h59c28 0 53 23 53 51 0 14-6 27-15 37-20-30-54-50-92-50H520c-17 0-30-13-30-30s13-30 30-30z" fill="#FFFFFF" opacity="0.16"/>
+    </g>
+  </g>
+</svg>
