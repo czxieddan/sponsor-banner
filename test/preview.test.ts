@@ -31,12 +31,32 @@ const requestPreview = async (env: Partial<Record<(typeof envKeys)[number], stri
   return response.text();
 };
 
+const requestPreviewWithHeaders = async (
+  env: Partial<Record<(typeof envKeys)[number], string>>,
+  headers: HeadersInit
+) => {
+  resetRuntime();
+
+  for (const [key, value] of Object.entries(env)) {
+    vi.stubEnv(key, value);
+  }
+
+  const { app } = await import("../src/app");
+  const response = await app.request("http://internal.local/", {
+    headers
+  });
+
+  expect(response.status).toBe(200);
+
+  return response.text();
+};
+
 const createInput = (value = "") => ({
   value,
   addEventListener: vi.fn()
 });
 
-const runPreviewScript = (html: string) => {
+const runPreviewScript = (html: string, origin = "http://internal.local") => {
   const script = html.match(/<script>([\s\S]*?)<\/script>/)?.[1];
   const configuredBaseUrl = html.match(/<main data-base-url="([^"]*)"/)?.[1] ?? "";
 
@@ -72,7 +92,7 @@ const runPreviewScript = (html: string) => {
       querySelectorAll: () => []
     },
     location: {
-      origin: "http://internal.local"
+      origin
     },
     navigator: {
       clipboard: {
@@ -107,6 +127,55 @@ describe("preview page", () => {
     expect(elements.get("markdown")?.value).toBe(
       "![](https://public.example.com/tools/banner/patreon/RHoiScribe.svg?w=1200&h=400&radius=48&padding=48&theme=dark)"
     );
+  });
+
+  it("uses the forwarded public request URL when PUBLIC_BASE_URL is a local default", async () => {
+    const html = await requestPreviewWithHeaders(
+      {
+        PUBLIC_BASE_URL: "http://localhost:43173"
+      },
+      {
+        host: "127.0.0.1:43173",
+        "x-forwarded-host": "sb.aperip.com",
+        "x-forwarded-proto": "https"
+      }
+    );
+
+    const elements = runPreviewScript(html);
+
+    expect(html).toContain('data-base-url="https://sb.aperip.com"');
+    expect(elements.get("svgUrl")?.value).toContain("https://sb.aperip.com/patreon/");
+    expect(elements.get("svgUrl")?.value).not.toContain("localhost:43173");
+  });
+
+  it("falls back to the browser origin when no public base URL is configured", async () => {
+    const html = await requestPreview({
+      PUBLIC_BASE_URL: ""
+    });
+
+    const elements = runPreviewScript(html, "https://sb.aperip.com");
+
+    expect(html).toContain('data-base-url=""');
+    expect(elements.get("svgUrl")?.value).toContain("https://sb.aperip.com/patreon/");
+    expect(elements.get("svgUrl")?.value).not.toContain("localhost:43173");
+  });
+
+  it("does not guess an http public base URL from host-only reverse proxy requests", async () => {
+    const html = await requestPreviewWithHeaders(
+      {
+        PUBLIC_BASE_URL: "http://localhost:43173"
+      },
+      {
+        host: "sb.aperip.com"
+      }
+    );
+
+    const elements = runPreviewScript(html, "https://sb.aperip.com");
+
+    expect(html).toContain('data-base-url=""');
+    expect(elements.get("svgUrl")?.value).toContain("https://sb.aperip.com/patreon/");
+    expect(elements.get("svgUrl")?.value).not.toContain("http://sb.aperip.com");
+    expect(elements.get("svgUrl")?.value).not.toContain("localhost:43173");
   });
 
   it("renders configured title, footer, and favicon", async () => {

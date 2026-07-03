@@ -69,7 +69,7 @@ const siteFavicon = resolveFavicon(siteFaviconUrl);
 
 export const serverConfig = {
   port: Number.parseInt(process.env.PORT ?? "43173", 10),
-  publicBaseUrl: trimTrailingSlash(process.env.PUBLIC_BASE_URL ?? "http://localhost:43173"),
+  publicBaseUrl: trimTrailingSlash(process.env.PUBLIC_BASE_URL ?? ""),
   siteTitle: process.env.SITE_TITLE ?? "Sponsor Banner",
   siteFooter: process.env.SITE_FOOTER ?? "Sponsor banner images for README files and project pages",
   siteFaviconUrl,

@@ -22,13 +22,13 @@ Create a `.env` file from `.env.example` and adjust these values:
 
 ```text
 PORT=43173
-PUBLIC_BASE_URL=https://example.com/sponsor-banner
+PUBLIC_BASE_URL=
 SITE_TITLE=Sponsor Banner
 SITE_FOOTER=Sponsor banner images for README files and project pages
 SITE_FAVICON_URL=sponsor-banner-logo.svg
 ```
 
-`PUBLIC_BASE_URL` is the public URL users open after any reverse proxy. The preview page uses it when generating SVG, PNG, Markdown, and HTML copy values.
+`PUBLIC_BASE_URL` is optional. Leave it empty to make the preview page use the URL users actually opened in the browser, which works for ordinary reverse proxy deployments. Do not set it to `http://localhost:43173` on a public server. Set it only when the app is mounted under a fixed public base path, such as `https://example.com/sponsor-banner`.
 
 `SITE_FAVICON_URL` supports either a public URL, such as `https://example.com/favicon.ico`, or a relative file path inside the container, such as `sponsor-banner-logo.svg`.
 

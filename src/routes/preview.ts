@@ -1,3 +1,4 @@
+import type { Context } from "hono";
 import { serverConfig } from "../config/defaults";
 import { platformRegistry } from "../themes";
 import { escapeHtml } from "../utils/html";
@@ -15,8 +16,86 @@ const faviconLink = () =>
     ? `<link rel="icon" href="${escapeHtml(serverConfig.siteFaviconHref)}">`
     : "";
 
-export const previewRoute = () => {
-  const baseUrl = escapeHtml(serverConfig.publicBaseUrl);
+const localHostnames = new Set(["localhost", "127.0.0.1", "::1", "0.0.0.0"]);
+
+const firstHeaderValue = (value: string | undefined) => value?.split(",")[0]?.trim() ?? "";
+
+const isLocalBaseUrl = (value: string) => {
+  if (!value) {
+    return true;
+  }
+
+  try {
+    const url = new URL(value);
+    return localHostnames.has(url.hostname);
+  } catch {
+    return false;
+  }
+};
+
+const normalizePrefix = (value: string) => {
+  const trimmed = value.trim();
+
+  if (!trimmed || trimmed === "/") {
+    return "";
+  }
+
+  return `/${trimmed.replace(/^\/+|\/+$/g, "")}`;
+};
+
+const forwardedScheme = (c: Context) => {
+  const forwardedProto = firstHeaderValue(c.req.header("x-forwarded-proto"));
+
+  if (forwardedProto) {
+    return forwardedProto;
+  }
+
+  const cfVisitor = c.req.header("cf-visitor");
+
+  if (cfVisitor) {
+    try {
+      const parsed = JSON.parse(cfVisitor) as { scheme?: string };
+
+      if (parsed.scheme) {
+        return parsed.scheme;
+      }
+    } catch {
+      return "";
+    }
+  }
+
+  return "";
+};
+
+const requestBaseUrl = (c: Context) => {
+  const host =
+    firstHeaderValue(c.req.header("x-forwarded-host")) || firstHeaderValue(c.req.header("host"));
+  const scheme = forwardedScheme(c);
+  const prefix = normalizePrefix(firstHeaderValue(c.req.header("x-forwarded-prefix")));
+
+  if (!host || !scheme) {
+    return "";
+  }
+
+  return `${scheme}://${host}${prefix}`.replace(/\/+$/, "");
+};
+
+const previewBaseUrl = (c: Context) => {
+  if (serverConfig.publicBaseUrl && !isLocalBaseUrl(serverConfig.publicBaseUrl)) {
+    return serverConfig.publicBaseUrl;
+  }
+
+  const requestBase = requestBaseUrl(c);
+
+  if (!isLocalBaseUrl(requestBase)) {
+    return requestBase;
+  }
+
+  return "";
+};
+
+export const previewRoute = (c: Context) => {
+  const baseUrl = escapeHtml(previewBaseUrl(c));
   const siteTitle = escapeHtml(serverConfig.siteTitle);
   const siteFooter = escapeHtml(serverConfig.siteFooter);
   const favicon = faviconLink();

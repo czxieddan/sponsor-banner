@@ -7,7 +7,7 @@ services:
     environment:
       NODE_ENV: production
       PORT: "${PORT:-43173}"
-      PUBLIC_BASE_URL: "${PUBLIC_BASE_URL:-http://localhost:43173}"
+      PUBLIC_BASE_URL: "${PUBLIC_BASE_URL:-}"
       SITE_TITLE: "${SITE_TITLE:-Sponsor Banner}"
       SITE_FOOTER: "${SITE_FOOTER:-Sponsor banner images for README files and project pages}"
       SITE_FAVICON_URL: "${SITE_FAVICON_URL:-}"
